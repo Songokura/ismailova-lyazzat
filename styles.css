@@ -387,3 +387,22 @@ html.no-plate .rv{opacity:1;transition:none}
 .docbox img{display:block;max-width:100%;max-height:88vh;border-radius:6px}
 .docbox-x{position:absolute;top:-14px;right:-14px;width:40px;height:40px;border-radius:50%;border:0;background:#fff;color:var(--ink);font-size:24px;line-height:1;cursor:pointer}
 @media(max-width:820px){.docs{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}.docbox-x{top:8px;right:8px}}
+
+/* ---------------- ГЕРОЙ С ФОТО ЛЯЗЗАТ (29.09.2026) ----------------
+   Десктоп: текст на льне слева, портрет панелью справа (выдох идёт внутри панели).
+   Мобайл: текст сверху, портрет нижней частью экрана под мягким переходом. */
+.hero .frame{background:var(--linen)}
+.stub.has-img img{display:block}
+.kont-ph{aspect-ratio:3/4}
+@media(min-width:761px){
+  .fr-hero{left:auto;right:clamp(16px,2.4vw,40px);top:calc(var(--hh) + 6px);bottom:64px;width:38%;border-radius:14px}
+  .hero .veil{display:none}
+  .hero-txt > .wrap > *{max-width:calc(58vw - (100vw - min(1180px,100vw - 32px)) / 2 - 36px)}
+  .h1 .big1{font-size:clamp(32px,min(3.9vw,8svh),64px)}
+  .hero-cta .btn{min-width:0}
+}
+@media(max-width:760px){
+  .fr-hero{top:auto;height:44%}
+  .hero .veil{top:auto;height:44%;background:linear-gradient(180deg,var(--linen) 0%,rgba(243,238,230,0) 22%)}
+}
+@media(max-width:760px) and (max-height:720px){.hero-cta .btn-ghost{display:none}.fr-hero,.hero .veil{height:40%}}
