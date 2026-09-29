@@ -286,3 +286,16 @@ fillTicker();
 fitText();
 hdrState();
 })();
+
+/* ---------------- ДИПЛОМ И СЕРТИФИКАТЫ ---------------- */
+(function(){
+  var box = document.getElementById("docbox"); if (!box || !box.showModal) return;
+  var img = box.querySelector("img");
+  document.querySelectorAll(".doc").forEach(function(b){
+    b.addEventListener("click", function(){
+      img.src = b.dataset.full; img.alt = b.querySelector("img").alt;
+      box.showModal();
+    });
+  });
+  box.addEventListener("click", function(e){ if (e.target === box || e.target.closest(".docbox-x")) box.close(); });
+})();
