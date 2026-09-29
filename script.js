@@ -299,20 +299,3 @@ hdrState();
   });
   box.addEventListener("click", function(e){ if (e.target === box || e.target.closest(".docbox-x")) box.close(); });
 })();
-
-/* ---------------- ВИДЕО-ПЕТЛИ В ПЛИТАХ ----------------
-   src ставится, только когда плита в кадре; при уходе - пауза. */
-(function(){
-  var vids = [].slice.call(document.querySelectorAll("video[data-src]"));
-  if (!vids.length || !("IntersectionObserver" in window)) return;
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      var v = e.target;
-      if (e.isIntersecting){
-        if (!v.src) { v.src = v.dataset.src; }
-        var p = v.play(); if (p && p.catch) p.catch(function(){});
-      } else if (v.src) { v.pause(); }
-    });
-  }, {threshold: 0.35});
-  vids.forEach(function(v){ v.addEventListener("playing", function(){ v.classList.add("is-live"); }); io.observe(v); });
-})();
