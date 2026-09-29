@@ -437,3 +437,24 @@ html.no-plate .rv{opacity:1;transition:none}
   .orn-grass{display:none}
 }
 @media(prefers-reduced-motion:reduce){.orn-rings,.orn-grass{animation:none}}
+
+/* ---------------- СИММЕТРИЯ: фото/видео и текст одной парой по центру (29.09.2026) ----------------
+   Раньше карточка липла к краю окна, текст - к краю контейнера: на широком экране между ними дыра.
+   Теперь пара «карточка + зазор + текст» центрируется как целое, у героя и у плит одна формула. */
+@media(min-width:761px){
+  .sv,.hero{--gap:clamp(36px,5vw,88px)}
+  .sv{--cw:min(34vw,(100svh - var(--hh) - 60px) * .6,500px);--tw:min(520px,100% - var(--cw) - var(--gap) - 64px);--gl:calc((100% - var(--cw) - var(--gap) - var(--tw)) / 2)}
+  .sv .fr{right:auto;left:calc(var(--gl) + var(--tw) + var(--gap));width:var(--cw);top:calc(var(--hh) + 10px);bottom:clamp(20px,4svh,40px)}
+  .sv.flip .fr{left:var(--gl)}
+  .sv .sv-txt{padding:calc(var(--hh) + 10px) 0 clamp(20px,4svh,40px);justify-content:center}
+  .sv .sv-txt .wrap,.sv.flip .sv-txt .wrap{display:block;width:var(--tw);margin:0 0 0 var(--gl)}
+  .sv.flip .sv-txt .wrap{margin-left:calc(var(--gl) + var(--cw) + var(--gap))}
+  .sv .note{width:100%}
+
+  .hero{--cw:min(34vw,(100svh - var(--hh) - 70px) * .7,560px);--tw:min(640px,100% - var(--cw) - var(--gap) - 64px);--gl:calc((100% - var(--cw) - var(--gap) - var(--tw)) / 2)}
+  .fr-hero{right:auto;left:calc(var(--gl) + var(--tw) + var(--gap));width:var(--cw)}
+  .hero-txt > .wrap{width:var(--tw);margin:0 0 0 var(--gl)}
+  .hero-txt > .wrap > *{max-width:100%}
+  .h1 .big1{font-size:clamp(30px,min(3.6vw,7.6svh),56px)}
+  .hero-orn{width:calc(var(--gl) + var(--tw) + var(--gap) / 2)}
+}
