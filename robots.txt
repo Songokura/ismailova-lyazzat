@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://songokura.github.io/ismailova-lyazzat/sitemap.xml
