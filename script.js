@@ -1,8 +1,7 @@
 /* ============================================================
    ЛЯЗЗАТ ИСМАИЛОВА, психолог - скрипт страницы.
-   Плиты и сигнатура «выдох» (герой: кадр отдаляется от детали по --intro, по --stay отступает
-   в карточку с полями; фото-плиты: --open на каждом .fr) · меню · бегущая строка · лента
-   с кнопками листания · WhatsApp с текстом по теме · форма в WhatsApp.
+   Плиты и сигнатура «выдох» (первый экран - CSS-анимация портрета, текст проявляется классом .on;
+   фото-плиты: --open на каждом .fr) · меню · WhatsApp с текстом по теме · форма в WhatsApp.
    Библиотек нет. Ссылки tel/wa не перезаписываются в момент клика,
    обработчик кликов - только делегирование в фазе захвата (совместимость с LeadBot).
    ============================================================ */
@@ -39,7 +38,6 @@ var WA_TXT = {
   znakomstvo:      HI + " Хочу записаться на первую встречу-знакомство. Удобный формат и время: ",
   trevoga:         HI + " Тема: тревога, страхи, панические атаки. Коротко о том, что происходит: ",
   otnosheniya:     HI + " Тема: отношения, зависимость, расставание. Коротко о том, что происходит: ",
-  online:          HI + " Хочу консультацию онлайн. Мой город и часовой пояс: ",
   samoocenka:      HI + " Тема: самооценка и смелость быть собой. Коротко: ",
   prednaznachenie: HI + " Тема: предназначение, карьера, мотивация. Коротко: ",
   krizis:          HI + " Тема: кризис, травма. Коротко о том, что происходит: ",
@@ -48,7 +46,7 @@ var WA_TXT = {
   psihosomatika:   HI + " Тема: психосоматика. Коротко: ",
   rpp:             HI + " Тема: пищевое поведение. Коротко: ",
   konflikty:       HI + " Тема: конфликты, личностный рост. Коротко: ",
-  uznayote:        HI + " Одной фразой о том, что происходит: ",
+  gruppa:          HI + " Хочу узнать о групповой терапии: состав, расписание, стоимость. ",
   paket5:          HI + " Хочу взять пакет из 5 сессий. Удобный формат: ",
   paket10:         HI + " Хочу взять пакет из 10 сессий. Удобный формат: ",
   supervizia:      HI + " Хочу записаться на супервизию (60 минут). Коротко о случае: ",
@@ -60,45 +58,12 @@ document.querySelectorAll("[data-wa]").forEach(function(a){
   a.target = "_blank"; a.rel = "noopener";
 });
 
-/* ---------------- БЕГУЩАЯ СТРОКА: темы (герой) ---------------- */
-var TICKS = {
-  svc: ["Тревога и панические атаки", "Отношения", "Расставание, развод", "Самооценка", "Кризисы и травмы",
-        "Горе и утрата", "Психосоматика", "Пищевое поведение", "Предназначение", "Семья", "Онлайн по всему миру", "Астана", "Конфиденциально"]
-};
-function fillTicker(){
-  document.querySelectorAll(".ticker[data-tick]").forEach(function(el){
-    var list = TICKS[el.dataset.tick]; if (!list) return;
-    var one = list.map(function(t){ return "<b>" + t + "</b>"; }).join("");
-    el.innerHTML = one;
-    var w = el.scrollWidth || 1000;
-    var need = Math.max(2, Math.ceil((innerWidth * 2) / w) + 1);
-    var html = "";
-    for (var i = 0; i < need; i++) html += one;
-    el.innerHTML = html;
-    el.style.setProperty("--tkw", w + "px");
-    el.style.setProperty("--tkd", Math.max(30, w / 26) + "s");
-  });
-}
-
-/* дисплейная строка героя в одну строку: ужимаем кегль, пока не влезет */
-function fitText(){
-  document.querySelectorAll(".h1 .big1").forEach(function(el){
-    el.style.fontSize = "";
-    if (getComputedStyle(el).whiteSpace !== "nowrap") return;
-    var box = el.parentElement.parentElement;
-    var bw = box.clientWidth; if (!bw) return;
-    var size = parseFloat(getComputedStyle(el).fontSize), base = size;
-    while (el.scrollWidth > bw + 1 && size > base * 0.5) { size *= 0.95; el.style.fontSize = size + "px"; }
-  });
-}
-
 var rsTimer;
 addEventListener("resize", function(){
   update();
   clearTimeout(rsTimer);
-  rsTimer = setTimeout(function(){ fillTicker(); fitText(); lenteState(); update(); }, 200);
+  rsTimer = setTimeout(update, 200);
 });
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fillTicker(); fitText(); update(); });
 
 /* ---------------- МЕНЮ ---------------- */
 var burger = document.getElementById("burger");
@@ -130,31 +95,6 @@ document.addEventListener("click", function(e){
 /* ---------------- ШАПКА ---------------- */
 var hdr = document.getElementById("hdr");
 function hdrState(){ if (hdr) hdr.classList.toggle("solid", scrollY > 40); }
-
-/* ---------------- ЛЕНТА «ЕСЛИ ВЫ УЗНАЁТЕ СЕБЯ»: кнопки листания ----------------
-   Шаг - ровно одна карточка (ширина + gap), крайняя кнопка гаснет, обе прячутся, если всё влезло. */
-var lente = document.getElementById("lente");
-var lprev = document.getElementById("lprev"), lnext = document.getElementById("lnext");
-function lenteStep(){
-  var card = lente && lente.querySelector(".say"); if (!card) return 300;
-  var gap = parseFloat(getComputedStyle(lente).columnGap || getComputedStyle(lente).gap) || 14;
-  return card.getBoundingClientRect().width + gap;
-}
-function lenteState(){
-  if (!lente || !lprev || !lnext) return;
-  var max = lente.scrollWidth - lente.clientWidth;
-  var none = max <= 1;
-  lprev.hidden = none; lnext.hidden = none;
-  lprev.disabled = lente.scrollLeft <= 6;        /* у ленты отрицательный отступ, старт не в нуле */
-  lnext.disabled = lente.scrollLeft >= max - 6;
-}
-if (lente && lprev && lnext) {
-  lprev.addEventListener("click", function(){ lente.scrollBy({left: -lenteStep(), behavior: RED ? "auto" : "smooth"}); });
-  lnext.addEventListener("click", function(){ lente.scrollBy({left: lenteStep(), behavior: RED ? "auto" : "smooth"}); });
-  lente.addEventListener("scroll", lenteState, {passive:true});
-  lenteState();
-  setTimeout(lenteState, 800);
-}
 
 /* ---------------- ПЛИТЫ, ИНТРО ГЕРОЯ, КАДРЫ ----------------
    Один слушатель scroll через rAF. На .pw пишем --enter/--exit/--stay;
@@ -282,8 +222,6 @@ if (form) form.addEventListener("submit", function(e){
 });
 
 /* ---------------- СТАРТ ---------------- */
-fillTicker();
-fitText();
 hdrState();
 })();
 
