@@ -357,3 +357,59 @@ html.no-plate #hero > *{opacity:1;transform:none;transition:none}
 .sec-dark .klist a{border-color:rgba(250,247,242,.3)}
 .sec-dark .klist a:hover{color:#fff;border-color:#fff}
 .kz .form{max-width:none}
+
+/* ---------- 06.10.2026: крупные заголовки разделов, конфиденциальность, запросы, обо мне, отзывы ---------- */
+/* .hb - заголовок раздела крупным шрифтом без кикера (просьба клиента), .hs - строка-продолжение под ним */
+.h2.hb{margin-top:0;font-size:clamp(40px,6.4vw,92px);line-height:1;letter-spacing:.02em;text-transform:uppercase}
+.h2.hb .hs{display:block;margin-top:14px;font-size:clamp(20px,2.2vw,30px);line-height:1.2;letter-spacing:0;text-transform:none;color:var(--mut)}
+@media(max-width:400px){.h2.hb{font-size:36px}}
+
+/* конфиденциально: замок + заголовок + две строки */
+.conf{padding:64px 0}
+@media(min-width:761px){.conf{padding:88px 0}}
+.conf-in{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px 32px;align-items:start}
+.conf-ic{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:var(--sage4);color:var(--sage2);border:1px solid var(--sage3);margin-top:4px}
+.conf .h2.hb{font-size:clamp(32px,4.4vw,60px)}
+.conf .lead{margin-top:16px}
+@media(max-width:560px){.conf .h2.hb{font-size:clamp(24px,7.4vw,40px);letter-spacing:.01em}.conf-in{grid-template-columns:1fr}.conf-ic{width:56px;height:56px}}
+
+/* запросы: подпункты и «парение» строк (transform пишет script.js) */
+.topic{align-items:center}
+.tp{grid-column:1;grid-row:1 / span 2;align-self:center;min-width:0}
+.topic .tp h3{grid-row:auto}
+.sub{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:5px}
+.sub li{position:relative;padding-left:16px;font-size:14px;line-height:1.45;color:var(--mut)}
+.sub li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--sage)}
+.topics.float .topic{will-change:transform}
+html.no-plate .topics.float .topic{transform:none!important}
+
+/* обо мне: образование свёрнуто */
+.edu-box{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.edu-box summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 20px;padding:26px 0}
+.edu-box summary::-webkit-details-marker{display:none}
+.eb-t{font:400 clamp(30px,4.2vw,56px)/1.05 var(--fd);color:var(--ink);transition:color .25s}
+.eb-s{grid-row:2;font-size:14px;color:var(--mut)}
+.eb-x{grid-column:2;grid-row:1 / span 2;position:relative;width:56px;height:56px;border-radius:50%;border:1px solid rgba(42,37,33,.22);transition:background .3s,border-color .3s}
+.eb-x::before,.eb-x::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:1.5px;margin:-.75px 0 0 -9px;background:var(--ink);transition:transform .35s var(--ease),background .3s}
+.eb-x::after{transform:rotate(90deg)}
+.edu-box[open] .eb-x::after{transform:rotate(0)}
+.edu-box summary:hover .eb-t{color:var(--sage2)}
+.edu-box summary:hover .eb-x{background:var(--ink);border-color:var(--ink)}
+.edu-box summary:hover .eb-x::before,.edu-box summary:hover .eb-x::after{background:#fff}
+.edu-box summary:focus-visible{outline:2px solid var(--sage);outline-offset:4px}
+.eb-body{padding:6px 0 34px}
+.edu-box .edu{margin:0 0 28px}
+@media(max-width:560px){.edu-box summary{padding:20px 0}.eb-x{width:46px;height:46px}}
+
+/* отзывы: три карточки, длинные свёрнуты */
+.revs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
+.rev{margin:0;position:relative;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px 26px 24px}
+.rev::before{content:"\00AB";display:block;height:40px;overflow:hidden;font:400 56px/1 var(--fd);color:var(--sage);margin-bottom:6px}
+.rev blockquote{margin:0;font-size:15px;line-height:1.62;color:var(--ink2)}
+.rev blockquote p+p{margin-top:10px}
+.rev.clamp blockquote{max-height:15.2em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.rev-more{margin-top:12px;padding:6px 0;border:0;background:none;font:600 14px/1.2 var(--ft);color:var(--sage2);cursor:pointer;border-bottom:1px solid currentColor}
+.rev-more[hidden]{display:none}
+.rev figcaption{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--mut)}
+@media(max-width:900px){.revs{grid-template-columns:1fr;gap:14px}.rev{padding:18px 20px 20px}}
+@media(prefers-reduced-motion:reduce){.eb-x::before,.eb-x::after{transition:none}}

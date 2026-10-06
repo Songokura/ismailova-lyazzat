@@ -37,14 +37,19 @@ var WA_TXT = {
   konsultaciya:    HI + " Хочу записаться на индивидуальную консультацию (60 минут). Удобный формат: ",
   znakomstvo:      HI + " Хочу записаться на первую встречу-знакомство. Удобный формат и время: ",
   trevoga:         HI + " Тема: тревога, страхи, панические атаки. Коротко о том, что происходит: ",
-  otnosheniya:     HI + " Тема: отношения, зависимость, расставание. Коротко о том, что происходит: ",
+  depressiya:      HI + " Тема: депрессия. Коротко о том, что происходит: ",
+  vygoranie:       HI + " Тема: выгорание, прокрастинация. Коротко: ",
+  otnosheniya:     HI + " Тема: отношения (в семье, в паре, с коллегами). Коротко о том, что происходит: ",
+  zavisimost:      HI + " Тема: эмоциональная зависимость. Коротко: ",
+  razvod:          HI + " Тема: расставание, развод. Коротко о том, что происходит: ",
   samoocenka:      HI + " Тема: самооценка и смелость быть собой. Коротко: ",
   prednaznachenie: HI + " Тема: предназначение, карьера, мотивация. Коротко: ",
-  krizis:          HI + " Тема: кризис, травма. Коротко о том, что происходит: ",
+  krizis:          HI + " Тема: кризис (возрастной, смысла жизни). Коротко о том, что происходит: ",
+  travmy:          HI + " Тема: насилие, травма. Коротко - сколько готовы рассказать: ",
+  emigraciya:      HI + " Тема: эмиграция, переезд. Коротко: ",
   gore:            HI + " Тема: горе, утрата. Коротко: ",
-  semya:           HI + " Тема: семейные отношения. Коротко: ",
   psihosomatika:   HI + " Тема: психосоматика. Коротко: ",
-  rpp:             HI + " Тема: пищевое поведение. Коротко: ",
+  rpp:             HI + " Тема: нарушения пищевого поведения. Коротко: ",
   konflikty:       HI + " Тема: конфликты, личностный рост. Коротко: ",
   gruppa:          HI + " Хочу узнать о групповой терапии: состав, расписание, стоимость. ",
   paket5:          HI + " Хочу взять пакет из 5 сессий. Удобный формат: ",
@@ -87,6 +92,7 @@ document.addEventListener("click", function(e){
   var t = document.getElementById(id); if (!t) return;
   e.preventDefault();
   closeMenu();
+  if (t.tagName === "DETAILS") t.open = true;
   var top = t.getBoundingClientRect().top + scrollY - (t.classList.contains("pw") ? 0 : HH() + 10);
   scrollTo({ top: Math.max(0, top), behavior: RED ? "auto" : "smooth" });
   try { history.pushState(null, "", "#" + id); } catch(err){}
@@ -205,6 +211,51 @@ if (HAS_IO) {
   document.querySelectorAll(".rv").forEach(function(el){ el.classList.add("in"); });
 }
 
+/* ---------------- ЗАПРОСЫ: «парение» строк при прокрутке ----------------
+   Цель смещения - от положения строки относительно центра экрана, у правой колонки скорость выше;
+   строка догоняет цель с инерцией (lerp), поэтому список «плывёт» за прокруткой. Только transform. */
+var floatRows = [].slice.call(document.querySelectorAll(".topics.float .topic"));
+if (floatRows.length && !RED) {
+  var fCur = floatRows.map(function(){ return 0; }), fRun = false, fVis = !HAS_IO;
+  var fList = document.querySelector(".topics.float");
+  var fK = function(i){
+    var two = matchMedia("(min-width:821px)").matches;
+    return two ? (i % 2 ? 1.25 : .8) * (1 + (Math.floor(i / 2) % 3) * .12) : 1 + (i % 3) * .2;
+  };
+  var fStep = function(){
+    var H = innerHeight, moving = false;
+    floatRows.forEach(function(el, i){
+      var r = el.getBoundingClientRect();
+      var d = (r.top - fCur[i] + r.height / 2 - H / 2) / H;          /* -1..1 от центра экрана, без своего сдвига */
+      var tgt = Math.max(-1, Math.min(1, d)) * 26 * fK(i);
+      var nx = fCur[i] + (tgt - fCur[i]) * .085;
+      if (Math.abs(nx - fCur[i]) > .05) moving = true;
+      fCur[i] = nx;
+      el.style.transform = "translate3d(0," + nx.toFixed(2) + "px,0)";
+    });
+    fRun = moving && fVis;
+    if (fRun) requestAnimationFrame(fStep);
+  };
+  var fKick = function(){ if (!fRun && fVis) { fRun = true; requestAnimationFrame(fStep); } };
+  if (HAS_IO) new IntersectionObserver(function(es){ fVis = es[0].isIntersecting; fKick(); }, {rootMargin:"20% 0px"}).observe(fList);
+  addEventListener("scroll", fKick, {passive:true});
+  addEventListener("resize", fKick);
+  fKick();
+}
+
+/* ---------------- ОТЗЫВЫ: длинные свёрнуты до «Читать полностью» ---------------- */
+document.querySelectorAll(".rev").forEach(function(r){
+  var q = r.querySelector("blockquote"), b = r.querySelector(".rev-more"); if (!q || !b) return;
+  r.classList.add("clamp");
+  if (q.scrollHeight <= q.clientHeight + 8) { r.classList.remove("clamp"); return; }
+  b.hidden = false;
+  b.addEventListener("click", function(){
+    var open = r.classList.toggle("clamp") === false;
+    b.textContent = open ? "Свернуть" : "Читать полностью";
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+});
+
 /* ---------------- ФОРМА → WhatsApp ---------------- */
 var form = document.getElementById("form");
 if (form) form.addEventListener("submit", function(e){
@@ -220,6 +271,8 @@ if (form) form.addEventListener("submit", function(e){
   conv("lead");
   window.open(waUrl(t), "_blank", "noopener");
 });
+
+if (location.hash === "#diplomy") { var dd = document.getElementById("diplomy"); if (dd) dd.open = true; }
 
 /* ---------------- СТАРТ ---------------- */
 hdrState();
