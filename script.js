@@ -227,8 +227,11 @@ if (floatRows.length && !RED) {
     floatRows.forEach(function(el, i){
       var r = el.getBoundingClientRect();
       var d = (r.top - fCur[i] + r.height / 2 - H / 2) / H;          /* -1..1 от центра экрана, без своего сдвига */
-      var tgt = Math.max(-1, Math.min(1, d)) * 26 * fK(i);
-      var nx = fCur[i] + (tgt - fCur[i]) * .085;
+      d = Math.max(-1, Math.min(1, d));
+      /* ниже центра строка «всплывает» снизу с большим запасом, выше - чуть уходит вверх */
+      var tgt = (d > 0 ? d * 90 : d * 34) * fK(i);
+      var nx = fCur[i] + (tgt - fCur[i]) * .07;
+      el.style.opacity = (1 - Math.max(0, d - .25) * .9).toFixed(3);
       if (Math.abs(nx - fCur[i]) > .05) moving = true;
       fCur[i] = nx;
       el.style.transform = "translate3d(0," + nx.toFixed(2) + "px,0)";
