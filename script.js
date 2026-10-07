@@ -275,7 +275,7 @@ if (form) form.addEventListener("submit", function(e){
   window.open(waUrl(t), "_blank", "noopener");
 });
 
-if (location.hash === "#diplomy") { var dd = document.getElementById("diplomy"); if (dd) dd.open = true; }
+if (location.hash) { var dd = document.getElementById(location.hash.slice(1)); if (dd && dd.tagName === "DETAILS") dd.open = true; }
 
 /* ---------------- СТАРТ ---------------- */
 hdrState();
